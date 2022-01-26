@@ -64,3 +64,12 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+##
+
+https://laravel-vite.innocenzi.dev/guide/troubleshooting.html
+Set ping_timeout to false in config/vite.php to disable the automatic development server discovery.
+
+Start Docker: ./vendor/bin/sail up
+Frontend: npm run dev
+Backend: php artisan serve
