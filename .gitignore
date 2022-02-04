@@ -17,3 +17,4 @@ yarn-error.log
 !/vendor/innocenzi/laravel-vite/config/vite.php
 /.phpstorm.meta.php
 /_ide_helper.php
+!/.pnpm-debug.log
