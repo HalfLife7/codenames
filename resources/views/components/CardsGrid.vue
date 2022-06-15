@@ -8,17 +8,17 @@
 
 <script lang="ts">
 import {defineComponent, onMounted, Ref, ref} from "vue";
-import {Card, getCards} from "@/scripts/services/CardService";
+import {Card as CardType, getCards} from "@/scripts/services/CardService";
 import Card from "@/views/components/Card.vue";
 
 
 export default defineComponent({
     name: 'CardsGrid',
     components: {Card},
-    setup(){
-        const cards: Ref<Card[]> = ref([]);
-        onMounted( async () => {
-             cards.value = await getCards();
+    setup() {
+        const cards: Ref<CardType[]> = ref([]);
+        onMounted(async () => {
+            cards.value = await getCards();
         })
         return {cards}
     }
