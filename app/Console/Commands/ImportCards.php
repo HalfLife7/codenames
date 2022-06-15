@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Card;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
+use function strtolower;
 
 class ImportCards extends Command
 {
@@ -44,8 +45,8 @@ class ImportCards extends Command
         $cards = Collection::wrap($json["words"]);
 
         $cards->map(function ($card, $key) {
-            Card::create([
-                'word' => $card['word'],
+            Card::updateOrCreate([
+                'word' => strtolower($card['word']),
                 'version' => $card['version']
             ]);
         });
