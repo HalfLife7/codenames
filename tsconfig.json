@@ -4,6 +4,9 @@
         "target": "esnext",
         "useDefineForClassFields": true,
         "module": "esnext",
+        "types": [
+            "vite/client"
+        ],
         "moduleResolution": "node",
         "isolatedModules": true,
         "strict": true,
