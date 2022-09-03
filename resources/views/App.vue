@@ -32,12 +32,13 @@ export default defineComponent({
         // Enable pusher logging - don't include this in production
         Pusher.logToConsole = true;
 
-        var pusher = new Pusher('bc90fa5eb763f6cfcfff', {
-            cluster: 'us2'
+        var pusher = new Pusher(import.meta.env.VITE_PUSHER_APP_KEY, {
+            cluster: import.meta.env.PUSHER_APP_CLUSTER
         });
 
         var channel = pusher.subscribe('my-channel');
         channel.bind('my-event', function (data: any) {
+            console.log(data);
             this.messages.push(JSON.stringify(data));
         });
     }
