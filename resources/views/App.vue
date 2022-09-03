@@ -1,11 +1,21 @@
 <template>
-    <CardsGrid></CardsGrid>
+    <div>
+
+        <CardsGrid></CardsGrid>
+        <ul>
+            <li v-for="message in messages">
+                {{ message }}
+            </li>
+        </ul>
+    </div>
 </template>
 
 <script lang="ts">
+import Pusher from "pusher-js";
 import {defineComponent} from 'vue';
 import HelloWorld from './components/HelloWorld.vue';
 import CardsGrid from "@/views/components/CardsGrid.vue";
+
 
 export default defineComponent({
     name: 'App',
@@ -13,16 +23,23 @@ export default defineComponent({
         CardsGrid,
         HelloWorld,
     },
+    data() {
+        return {
+            messages: []
+        }
+    },
+    created() {
+        // Enable pusher logging - don't include this in production
+        Pusher.logToConsole = true;
+
+        var pusher = new Pusher('bc90fa5eb763f6cfcfff', {
+            cluster: 'us2'
+        });
+
+        var channel = pusher.subscribe('my-channel');
+        channel.bind('my-event', function (data: any) {
+            this.messages.push(JSON.stringify(data));
+        });
+    }
 });
 </script>
-
-<style>
-#app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
-}
-</style>
