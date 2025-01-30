@@ -10,17 +10,29 @@ CREATE TYPE game_status AS ENUM ('waiting', 'in_progress', 'completed');
 -- Remove the word_set enum since we'll use a table
 DROP TYPE IF EXISTS word_set;
 
--- Create word_sets table for extensibility
+-- Create the tables
 CREATE TABLE word_sets (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
     description TEXT,
     is_official BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT word_count_check CHECK (
-        (SELECT COUNT(*) FROM words WHERE word_set_id = id) BETWEEN 100 AND 400
-    )
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE words (
+    id SERIAL PRIMARY KEY,
+    word_set_id INTEGER REFERENCES word_sets(id),
+    word VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create a view for word count per set
+CREATE VIEW word_set_counts AS
+SELECT 
+    word_set_id,
+    COUNT(*) as word_count
+FROM words
+GROUP BY word_set_id;
 
 -- Games table
 CREATE TABLE games (
@@ -53,19 +65,6 @@ CREATE TABLE players (
     CONSTRAINT max_players_per_game CHECK (
         (SELECT COUNT(*) FROM players p2 WHERE p2.game_id = game_id) <= 8
     )
-);
-
--- Words table (reusable dictionary of valid words)
-CREATE TABLE words (
-    id SERIAL PRIMARY KEY,
-    word VARCHAR(20) NOT NULL 
-        CHECK (
-            length(word) >= 2  -- Minimum 2 characters
-            AND word ~ '^[A-Z][A-Z \-]+$'  -- Start with letter, allow spaces and hyphens
-            AND length(word) <= 20
-        ),
-    word_set_id INTEGER REFERENCES word_sets(id),
-    UNIQUE(word, word_set_id)  -- Words can repeat across different sets
 );
 
 -- Game cards table (represents cards in a specific game)
@@ -146,7 +145,7 @@ CREATE TRIGGER update_game_cards_updated_at
 
 -- Insert initial word sets
 INSERT INTO word_sets (name, description) VALUES 
-    ('original', 'Original Codenames word set'),
+    ('original', 'Original Codenames word set');
 
 -- Insert some sample words
 INSERT INTO words (word, word_set_id) VALUES 

@@ -1,0 +1,4 @@
+# Environment variables
+.env
+frontend/.env
+backend/express/.env 

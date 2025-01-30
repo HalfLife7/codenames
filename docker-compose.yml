@@ -10,6 +10,7 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+      - frontend-cache:/app/node_modules/.cache
     environment:
       - REACT_APP_HASURA_GRAPHQL_URL=http://localhost:8080/v1/graphql
       - REACT_APP_WS_URL=ws://localhost:4000
@@ -27,17 +28,24 @@ services:
     environment:
       POSTGRES_PASSWORD: postgrespassword
       POSTGRES_DB: app_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   hasura:
     image: hasura/graphql-engine:latest
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/app_db
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_DEV_MODE: "true"
+      HASURA_GRAPHQL_ADMIN_SECRET: your_admin_secret
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
 
   express:
@@ -55,4 +63,5 @@ services:
       - postgres
 
 volumes:
-  postgres_data: 
+  postgres_data:
+  frontend-cache: 
